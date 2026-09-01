@@ -28,6 +28,10 @@ public abstract class AuditedEntity {
 //	
 //	@LastModifiedBy
 //	private String updatedBy;
+
+	public AuditedEntity(){
+
+	}
 	
 	@CreatedDate
 	private Instant createdAt;

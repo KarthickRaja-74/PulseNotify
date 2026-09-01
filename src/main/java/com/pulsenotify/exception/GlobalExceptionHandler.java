@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -36,5 +37,14 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse("Validation Failed" , errors);
 		
 		return ResponseEntity.badRequest().body(response);
+	}
+
+	@ExceptionHandler(EmailAlreadyExistsException.class)
+	public ResponseEntity<ErrorResponse> handleExistingEmailException(EmailAlreadyExistsException ex){
+		ErrorResponse errorResponse = new ErrorResponse("Email already exists",List.of(ex.getMessage()));
+		
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(errorResponse);
 	}
 }

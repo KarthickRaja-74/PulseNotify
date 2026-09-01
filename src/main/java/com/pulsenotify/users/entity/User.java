@@ -11,7 +11,9 @@ public class User extends AuditedEntity {
 	private String email;
     public User() {
     }
-
+    public User(String email){
+        this.email = email;
+    }
     public String getEmail() {
         return email;
     }
