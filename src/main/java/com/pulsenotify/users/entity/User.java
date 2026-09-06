@@ -9,6 +9,12 @@ import jakarta.persistence.Table;
 @Table(name = "users")
 public class User extends AuditedEntity {
 	private String email;
+	private String password;
+	
+	public User(String email, String password) {
+		this.email = email;
+		this.password = password;
+	}
     public User() {
     }
     public User(String email){
@@ -21,4 +27,7 @@ public class User extends AuditedEntity {
     public void setEmail(String email) {
         this.email = email;
     }
+    public void setPassword(String password) {
+		this.password = password;
+	}
 }

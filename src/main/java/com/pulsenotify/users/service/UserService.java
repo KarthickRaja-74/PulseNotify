@@ -1,6 +1,6 @@
 package com.pulsenotify.users.service;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.pulsenotify.exception.EmailAlreadyExistsException;
@@ -12,16 +12,18 @@ import com.pulsenotify.users.repository.UserRepository;
 @Service
 public class UserService {
 
-    public final UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder; 
 
-    public UserService(UserRepository userRepository){
+    public UserService(UserRepository userRepository , PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
     public RegistrationResponse registerUser(RegistrationRequest request){
         String email = request.getEmail().trim().toLowerCase();
         if(userRepository.existsByEmail(email))
             throw new EmailAlreadyExistsException(email);
-        User user = new User(email);
+        User user = new User(email, passwordEncoder.encode(request.getPassword()));
         User result = userRepository.save(user);
         return new RegistrationResponse(result.getId() , result.getEmail());
     }
