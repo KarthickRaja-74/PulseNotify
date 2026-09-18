@@ -20,7 +20,4 @@ public class RegistrationRequest {
 		return this.password;
 	}
 
-    public void setEmail(String email){
-        this.email = email;
-    }
 }

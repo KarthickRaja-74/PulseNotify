@@ -30,4 +30,8 @@ public class User extends AuditedEntity {
     public void setPassword(String password) {
 		this.password = password;
 	}
+    
+    public String getPassword() {
+        return password;
+    }
 }
