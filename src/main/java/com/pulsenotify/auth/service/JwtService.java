@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.pulsenotify.config.JwtProperties;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -35,5 +36,15 @@ public class JwtService {
 				.expiration(Date.from(expiration))
 				.signWith(secretKey)
 				.compact();
+	}
+	
+	public UUID extractUserId(String token) {
+	    Claims claims = Jwts.parser()
+	            .verifyWith(secretKey)
+	            .build()
+	            .parseSignedClaims(token)
+	            .getPayload();
+
+	    return UUID.fromString(claims.getSubject());
 	}
 }

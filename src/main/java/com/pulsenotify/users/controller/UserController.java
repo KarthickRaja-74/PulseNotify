@@ -1,7 +1,12 @@
 package com.pulsenotify.users.controller;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,5 +31,18 @@ public class UserController {
         RegistrationResponse response = userservice.registerUser(request);
         ApiResponse<RegistrationResponse> apiResponse = new ApiResponse<>(true, "User Registered", response);
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+    
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UUID>> getCurrentUser() {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        UUID userId = (UUID) authentication.getPrincipal();
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true,"Authenticated user", userId)
+        );
     }
 }
