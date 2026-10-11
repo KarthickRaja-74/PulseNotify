@@ -56,4 +56,18 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(errorResponse);
 	}
+	
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
+
+	    ErrorResponse response = new ErrorResponse(ex.getMessage(), List.of(ex.getMessage()));
+	    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+	}
+	
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex) {
+
+	    ErrorResponse response = new ErrorResponse(ex.getMessage(), List.of(ex.getMessage()));
+	    return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+	}
 }

@@ -17,7 +17,12 @@ public class Notification extends AuditedEntity {
 	
 	public Notification() {
 	}
-
+	public Notification(String message, String receiver, Channel channel) {
+	    this.message = message;
+	    this.receiver = receiver;
+	    this.channel = channel;
+	    this.status = Status.PENDING;
+	}
 	private String message;
 	private String receiver;
 	@Enumerated(EnumType.STRING)
@@ -34,9 +39,6 @@ public class Notification extends AuditedEntity {
 	public void setChannel(Channel channel) {
 		this.channel = channel;
 	}
-	public void setStatus(Status status) {
-		this.status = status;
-	}
 	
 	public String getMessage() {
 		return message;
@@ -49,5 +51,17 @@ public class Notification extends AuditedEntity {
 	}
 	public Status getStatus() {
 		return status;
+	}
+	
+	public void transitionTo(Status nextStatus) {
+		boolean isValidTransition = switch(this.status) {
+			case PENDING -> nextStatus == Status.PROCESSING;
+			case PROCESSING -> nextStatus == Status.SENT || nextStatus == Status.FAILED;
+			case SENT, FAILED -> false;
+		};
+		if(!isValidTransition) {
+			throw new IllegalStateException("Invalid status transition from " + this.status + " to " + nextStatus);
+		}
+		this.status = nextStatus;
 	}
 }

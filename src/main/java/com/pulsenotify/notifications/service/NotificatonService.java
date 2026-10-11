@@ -1,8 +1,12 @@
 package com.pulsenotify.notifications.service;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 
+import com.pulsenotify.exception.ResourceNotFoundException;
 import com.pulsenotify.notifications.Enum.Channel;
+import com.pulsenotify.notifications.Enum.Status;
 import com.pulsenotify.notifications.dto.CreateNotificationRequestDto;
 import com.pulsenotify.notifications.dto.CreateNotificationResponseDto;
 import com.pulsenotify.notifications.entity.Notification;
@@ -26,11 +30,8 @@ public class NotificatonService {
 		        throw new IllegalArgumentException("Invalid phone number receiver");    
 		}
 		
-		Notification notification = new Notification();
-		notification.setMessage(request.getMessage());
-		notification.setReceiver(request.getReceiver());
-		notification.setChannel(Channel.valueOf(request.getChannel()));
-		notification.setStatus(com.pulsenotify.notifications.Enum.Status.PENDING);
+		Notification notification = new Notification
+				(request.getMessage(), request.getReceiver(), Channel.valueOf(request.getChannel()));
 		
 		Notification saved = notificationRepository.save(notification);
 		CreateNotificationResponseDto response = new CreateNotificationResponseDto();
@@ -42,5 +43,15 @@ public class NotificatonService {
 		
 		return response;
 		
+	}
+	
+	@Transactional
+	public void transitionNotificationStatus(UUID notificationId, Status nextStatus) {
+
+	    Notification notification = notificationRepository.findById(notificationId)
+	            .orElseThrow(() -> new ResourceNotFoundException("Notification not found: " + notificationId));
+
+	    notification.transitionTo(nextStatus);
+	    notificationRepository.save(notification);
 	}
 }
