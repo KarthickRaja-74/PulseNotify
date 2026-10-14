@@ -11,6 +11,7 @@ import com.pulsenotify.notifications.dto.CreateNotificationRequestDto;
 import com.pulsenotify.notifications.dto.CreateNotificationResponseDto;
 import com.pulsenotify.notifications.entity.Notification;
 import com.pulsenotify.notifications.repository.NotificationRepository;
+import com.pulsenotify.users.dto.GetNotificationResponseDto;
 
 import jakarta.transaction.Transactional;
 
@@ -53,5 +54,21 @@ public class NotificatonService {
 
 	    notification.transitionTo(nextStatus);
 	    notificationRepository.save(notification);
+	}
+	
+	public GetNotificationResponseDto getNotificationById(UUID notificationId) {
+	    Notification notification = notificationRepository.findById(notificationId)
+	            .orElseThrow(() -> new ResourceNotFoundException("Notification not found: " + notificationId));
+
+	    GetNotificationResponseDto response = new GetNotificationResponseDto();
+	    response.setId(notification.getId());
+	    response.setMessage(notification.getMessage());
+	    response.setReceiver(notification.getReceiver());
+	    response.setChannel(notification.getChannel().name());
+	    response.setStatus(notification.getStatus().name());
+	    response.setCreatedAt(notification.getCreatedAt());
+	    response.setUpdatedAt(notification.getUpdatedAt());
+
+	    return response;
 	}
 }
