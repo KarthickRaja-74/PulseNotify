@@ -19,11 +19,17 @@ import com.pulsenotify.notifications.dto.NotificationPageResponseDto;
 import com.pulsenotify.notifications.service.NotificatonService;
 import com.pulsenotify.response.ApiResponse;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+
+@Tag(
+    name = "Notifications",
+    description = "Create, retrieve, and list notifications"
+)
 @RestController
 @RequestMapping("/api/notifications")
-public class NotificationController {
+	public class NotificationController {
 	
 	private final NotificatonService notificatonService;
 	
