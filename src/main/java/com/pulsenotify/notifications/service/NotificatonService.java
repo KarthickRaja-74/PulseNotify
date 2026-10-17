@@ -2,18 +2,24 @@ package com.pulsenotify.notifications.service;
 
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pulsenotify.exception.ResourceNotFoundException;
 import com.pulsenotify.notifications.Enum.Channel;
 import com.pulsenotify.notifications.Enum.Status;
 import com.pulsenotify.notifications.dto.CreateNotificationRequestDto;
 import com.pulsenotify.notifications.dto.CreateNotificationResponseDto;
+import com.pulsenotify.notifications.dto.GetNotificationResponseDto;
+import com.pulsenotify.notifications.dto.NotificationPageResponseDto;
 import com.pulsenotify.notifications.entity.Notification;
 import com.pulsenotify.notifications.repository.NotificationRepository;
-import com.pulsenotify.users.dto.GetNotificationResponseDto;
 
-import jakarta.transaction.Transactional;
+
 
 @Service
 public class NotificatonService {
@@ -70,5 +76,44 @@ public class NotificatonService {
 	    response.setUpdatedAt(notification.getUpdatedAt());
 
 	    return response;
+	}
+	
+	@Transactional(readOnly = true)
+	public NotificationPageResponseDto getNotifications(int page, int size) {
+
+	    Pageable pageable = PageRequest.of(
+	            page,
+	            size,
+	            Sort.by(
+	                    Sort.Order.desc("createdAt"),
+	                    Sort.Order.desc("id")
+	            )
+	    );
+
+	    Page<GetNotificationResponseDto> notificationPage = notificationRepository.findAll(pageable)
+	            .map(notification -> {
+	                GetNotificationResponseDto response =
+	                        new GetNotificationResponseDto();
+
+	                response.setId(notification.getId());
+	                response.setMessage(notification.getMessage());
+	                response.setReceiver(notification.getReceiver());
+	                response.setChannel(notification.getChannel().name());
+	                response.setStatus(notification.getStatus().name());
+	                response.setCreatedAt(notification.getCreatedAt());
+	                response.setUpdatedAt(notification.getUpdatedAt());
+
+	                return response;
+	            });
+	    
+	    NotificationPageResponseDto response = new NotificationPageResponseDto();
+	    response.setContent(notificationPage.getContent());
+	    response.setCurrentPage(notificationPage.getNumber());
+	    response.setPageSize(notificationPage.getSize());
+	    response.setTotalElements(notificationPage.getTotalElements());
+	    response.setTotalPages(notificationPage.getTotalPages());
+	    
+	    return response;
+	    
 	}
 }

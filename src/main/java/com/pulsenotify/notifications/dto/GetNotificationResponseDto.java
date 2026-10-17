@@ -1,4 +1,4 @@
-package com.pulsenotify.users.dto;
+package com.pulsenotify.notifications.dto;
 
 import java.time.Instant;
 import java.util.UUID;
