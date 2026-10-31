@@ -4,12 +4,13 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.validation.FieldError;
 
 import com.pulsenotify.response.ErrorResponse;
 
@@ -68,6 +69,13 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex) {
 
 	    ErrorResponse response = new ErrorResponse(ex.getMessage(), List.of(ex.getMessage()));
+	    return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+	}
+	
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
+	        DataIntegrityViolationException ex) {
+	    ErrorResponse response = new ErrorResponse("Data integrity violation",  List.of("The request conflicts with existing data or database constraintss"));
 	    return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 	}
 }
